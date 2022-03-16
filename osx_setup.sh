@@ -116,6 +116,7 @@ brew install --cask alfred
 brew install --cask android-file-transfer
 brew install --cask monitorcontrol
 brew install --cask rectangle
+brew install --cask soundflower
 brew install --cask bartender
 
 echo "Cleaning up..."
