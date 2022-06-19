@@ -81,9 +81,12 @@ brew install --cask whatsapp
 brew install --cask telegram
 brew install --cask zoom
 brew install --cask spark
+brew install --cask slack
 
 # Web Tools
 echo "Installing web tools..."
+brew install firebase-cli
+brew install vue-cli
 brew install node
 brew install nvm
 brew install --cask firefox
