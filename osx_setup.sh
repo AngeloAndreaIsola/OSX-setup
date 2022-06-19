@@ -41,6 +41,7 @@ brew install postgresql
 
 # Dev Tools
 echo "Installing development tools..."
+brew install --cask beekeeper-studio
 brew install --cask docker
 brew install --cask github
 brew install --cask hyper
