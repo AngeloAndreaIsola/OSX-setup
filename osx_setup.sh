@@ -57,6 +57,7 @@ brew install vim
 brew install tmux
 brew install tree
 brew install wget
+brew install htop
 
 echo "Installing VSCode extensions..."
 code --install-extension msjsdiag.debugger-for-chrome
