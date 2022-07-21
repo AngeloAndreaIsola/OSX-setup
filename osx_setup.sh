@@ -175,3 +175,14 @@ defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 # Enable full keyboard access for all controls
 # (e.g. enable Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+
+#TODO:
+#remove from dock: map, photo, facetime, contact, note, memo, messages, tv, music, podcast, keynote, numbers, pages.
+#Add HomeBrew path after installation.
+#remove recent used apps in dock
+#set iterm2 as dedefault
+#set chrome as default
+#set vlc as default
+#add microsoft teams
+#add notion
