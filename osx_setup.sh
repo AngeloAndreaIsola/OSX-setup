@@ -19,6 +19,10 @@ if test ! $(which brew); then
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
+#Adding brew to path
+echo "export PATH=/opt/homebrew/bin:$PATH" >> ~/.bash_profile && source ~/.bash_profile
+
+
 echo "Installing brew cask..."
 brew tap homebrew/cask
 
