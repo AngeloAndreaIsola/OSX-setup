@@ -86,6 +86,7 @@ brew install --cask spark
 brew install --cask slack
 brew install --cask asana
 
+
 # Web Tools
 echo "Installing web tools..."
 brew install firebase-cli
@@ -180,6 +181,8 @@ defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 #remove recent used apps in dock
 defaults write com.apple.dock show-recents -bool FALSE
 
+#Dock auto hide
+defaults write com.apple.dock autohide-time-modifier -float 0.15;killall Dock
 
 
 #TODO:
