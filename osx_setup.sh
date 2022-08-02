@@ -84,6 +84,7 @@ brew install --cask telegram
 brew install --cask zoom
 brew install --cask spark
 brew install --cask slack
+brew install --cask asana
 
 # Web Tools
 echo "Installing web tools..."
