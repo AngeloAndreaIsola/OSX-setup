@@ -129,6 +129,7 @@ brew install --cask monitorcontrol
 brew install --cask rectangle
 brew install --cask soundflower
 brew install --cask bartender
+brew install dockutil
 
 echo "Cleaning up..."
 brew cleanup
@@ -192,9 +193,20 @@ defaults write com.apple.dock autohide-time-modifier -float 0.15;killall Dock
 echo "Setting default apps"
 open -a "Google Chrome" --args --make-default-browser
 
+echo "Removing some apps from dock"
+dockutil --remove 'Maps'
+dockutil --remove 'Photo'
+dockutil --remove 'FaceTime'
+dockutil --remove 'Contacts'
+dockutil --remove 'Notes'
+dockutil --remove 'Reminders'
+dockutil --remove 'Messages'
+dockutil --remove 'TV'
+dockutil --remove 'Music'
+dockutil --remove 'Podcasts'
+dockutil --remove 'Keynote'
+dockutil --remove 'Pages'
+
 
 #TODO:
-#remove from dock: map, photo, facetime, contact, note, memo, messages, tv, music, podcast, keynote, numbers, pages.
-#set iterm2 as dedefault
-#set vlc as default
 #add microsoft teams
