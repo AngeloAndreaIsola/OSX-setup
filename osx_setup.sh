@@ -176,11 +176,14 @@ defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 # (e.g. enable Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
+#remove recent used apps in dock
+defaults write com.apple.dock show-recents -bool FALSE
+
+
 
 #TODO:
 #remove from dock: map, photo, facetime, contact, note, memo, messages, tv, music, podcast, keynote, numbers, pages.
 #Add HomeBrew path after installation.
-#remove recent used apps in dock
 #set iterm2 as dedefault
 #set chrome as default
 #set vlc as default
