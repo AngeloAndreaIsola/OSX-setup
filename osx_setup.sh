@@ -99,6 +99,7 @@ brew install node
 brew install nvm
 brew install --cask firefox
 brew install --cask google-chrome
+brew install yarn
 
 # File Storage
 echo "Installing file storage tools..."
