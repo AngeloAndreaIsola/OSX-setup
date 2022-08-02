@@ -206,7 +206,3 @@ dockutil --remove 'Music'
 dockutil --remove 'Podcasts'
 dockutil --remove 'Keynote'
 dockutil --remove 'Pages'
-
-
-#TODO:
-#add microsoft teams
