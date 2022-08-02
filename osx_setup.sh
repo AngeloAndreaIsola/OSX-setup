@@ -100,6 +100,8 @@ brew install nvm
 brew install --cask firefox
 brew install --cask google-chrome
 brew install yarn
+curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+installer -pkg ./AWSCLIV2.pkg -target /
 
 # File Storage
 echo "Installing file storage tools..."
