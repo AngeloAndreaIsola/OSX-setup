@@ -189,11 +189,12 @@ defaults write com.apple.dock show-recents -bool FALSE
 defaults write com.apple.dock autohide-time-modifier -float 0.15;killall Dock
 
 
+echo "Setting default apps"
+open -a "Google Chrome" --args --make-default-browser
+
+
 #TODO:
 #remove from dock: map, photo, facetime, contact, note, memo, messages, tv, music, podcast, keynote, numbers, pages.
-#Add HomeBrew path after installation.
 #set iterm2 as dedefault
-#set chrome as default
 #set vlc as default
 #add microsoft teams
-#add notion
