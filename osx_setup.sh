@@ -55,13 +55,21 @@ brew install --cask rstudio
 brew install --cask visual-studio-code
 brew install --cask atom
 brew install --cask postman
+brew install --cask figma
 brew install docker
 brew install git
+brew tap microsoft/git
+brew install --cask git-credential-manager-core
+brew upgrade git-credential-manager-core
+brew install gh
 brew install vim
 brew install tmux
 brew install tree
 brew install wget
 brew install htop
+brew install zsh
+brew install romkatv/powerlevel10k/powerlevel10k
+echo "source $(brew --prefix)/opt/powerlevel10k/powerlevel10k.zsh-theme" >>~/.zshrc
 
 echo "Installing VSCode extensions..."
 code --install-extension msjsdiag.debugger-for-chrome
@@ -86,7 +94,6 @@ brew install --cask skype
 brew install --cask whatsapp
 brew install --cask telegram
 brew install --cask zoom
-brew install --cask spark
 brew install --cask slack
 brew install --cask asana
 brew install --cask notion
@@ -100,8 +107,19 @@ brew install nvm
 brew install --cask firefox
 brew install --cask google-chrome
 brew install yarn
+brew install firebase-cli
 curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 installer -pkg ./AWSCLIV2.pkg -target /
+brew install typescript
+export PATH=/usr/local/bin:$PATH
+npm install  — save react react-dom
+brew install vite
+
+#install NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+source .zshrc
+nvm install node
+nvm use node
 
 # File Storage
 echo "Installing file storage tools..."
@@ -124,6 +142,7 @@ brew install --cask teamviewer
 brew install --cask vlc
 brew install --cask transmission
 brew install --cask adobe-acrobat-reader
+brew install --cask pdfelement
 brew install --cask 4k-video-downloader
 brew install --cask copyclip
 brew install --cask alfred
@@ -133,6 +152,7 @@ brew install --cask rectangle
 brew install --cask soundflower
 brew install --cask bartender
 brew install dockutil
+brew install --cask cyberduck
 
 echo "Cleaning up..."
 brew cleanup
