@@ -1,180 +1,137 @@
-# Setupper Vision
+# Setupper — Implementation Plan
 
-## Goal
+This plan sequences the design decisions in `setupper-design.md` into
+buildable milestones. Each milestone is meant to produce something
+runnable, not just scaffolding.
 
-Create a CLI that captures a developer workstation, recommends
-improvements, and reproduces it on another machine.
+## Milestone 0 — Foundations
 
-## Core Principles
+Goal: nothing user-facing yet, but the seams every later milestone
+depends on are in place.
 
--   Scan first, never modify.
--   Build an inventory as the source of truth.
--   Let users choose what to install.
--   Recommend industry-standard tools based on profiles.
--   Treat installation, configuration, authentication, and verification
-    as separate lifecycle stages.
+- [ ] `cmd/setupper` skeleton, CLI framework wired up
+- [ ] `internal/runner`: thin `Runner` interface + real subprocess
+      implementation (shells out to arbitrary commands)
+- [ ] Fake `Runner` for tests
+- [ ] Manifest types (desired + observed) with `schema_version` field
+- [ ] `~/.setupper/` directory setup (config, cache, logs)
 
-## Workflow
+## Milestone 1 — Scan & Inventory (MVP core)
 
-``` text
-Scan -> Inventory -> Recommendations -> Plan -> Apply -> Verify
-```
+Goal: `setupper scan` produces a real observed manifest for brew.
 
-## Architecture
+- [ ] `scanner`: brew formulas + casks via `Runner`
+- [ ] `scanner`: App Store apps via `mas`, if present — skip
+      gracefully if absent
+- [ ] Normalized observed manifest output (`type:name` identity keys)
+- [ ] `setupper inventory` — read-only display of observed state
+- [ ] Manually-declared `Application` entries supported in the
+      desired manifest schema (no auto-scan)
 
-### Modules
+## Milestone 2 — Desired Manifest & Diffing
 
--   scanner
--   inventory
--   recommender
--   planner
--   installer
--   configurator
--   verifier
--   exporters
+Goal: the two-manifest model actually works end to end.
 
-### Resource Model
+- [ ] Desired manifest schema + YAML (de)serialization
+- [ ] Diff engine: observed vs. desired → unmanaged / missing /
+      matching
+- [ ] `setupper init`: scan + profile auto-suggestion (stub profiles
+      OK for now) → starter desired manifest, reviewed before write
+- [ ] `setupper migrate`: explicit schema-version upgrade command
+      (fail loudly on mismatch elsewhere)
 
-Every resource supports:
+## Milestone 3 — Recommendation Profiles
 
--   Scan
--   Recommend
--   Plan
--   Install
--   Configure
--   Authenticate (optional)
--   Verify
+Goal: profiles suggest tools based on scan evidence.
 
-Resource types include:
+- [ ] Embedded YAML profile definitions (`go`, `node`, `python`, ...)
+- [ ] `recommender`: match scan evidence → suggested profiles +
+      suggested resources
+- [ ] `setupper recommend` — plain output first (no TUI required yet)
 
--   Homebrew formula
--   Homebrew cask
--   App Store app
--   Application
--   CLI tool
--   VS Code extension
--   Cursor extension
--   Font
--   Shell configuration
--   Git configuration
--   Cloud credential
--   Secret
--   Service
+## Milestone 4 — Planner TUI
 
-## Scanner
+Goal: the first real interactive surface.
 
-Discover: - Brew packages - Applications - App Store apps - VS
-Code/Cursor extensions - npm, pnpm, cargo, pipx, uv, go installs -
-Fonts - Shells - Git config
+- [ ] Bubble Tea checklist screen: accept/reject recommendations and
+      unmanaged/adoptable resources
+- [ ] `--yes` / non-interactive mode producing the same plan output
+- [ ] `planner`: hardcoded type-level dependency rules
+      (extension→app, credential→cli-tool) applied when ordering the
+      plan
+- [ ] `setupper plan` writes a concrete, ordered execution plan
 
-Output a normalized manifest.
+## Milestone 5 — Apply Engine
 
-## Manifest
+Goal: the plan actually does something to the machine.
 
-The manifest is the canonical representation.
+- [ ] `installer`: brew install/upgrade via `Runner`, sequential
+- [ ] Best-effort/continue semantics + `--fail-fast` flag
+- [ ] Per-resource stage scoping (a failed install blocks later
+      stages for that resource only)
+- [ ] Bubble Tea progress screen for `apply`
+- [ ] `configurator`: narrow idempotent shell config blocks (PATH,
+      tool init lines), with dotfile-manager detection/deferral
 
-``` yaml
-installed:
-  - brew: go
-  - cask: docker
-selected: []
-recommendations: []
-```
+## Milestone 6 — Authentication & Secrets
 
-## Recommendation Engine
+Goal: auth flows are orchestrated, never stored.
 
-Profiles:
+- [ ] `Authenticate` stage: trigger `gh auth login`,
+      `aws sso login` / `aws configure sso`, Claude Code login
+- [ ] Manifest records `authenticated: true/false` + account/profile
+      only — no token/secret persistence
+- [ ] Interface designed to allow a future pluggable secret-backend
+      reference (1Password CLI, Keychain) without implementing one
+      yet
 
--   general
--   go
--   node
--   python
--   devops
--   kubernetes
--   aws
--   security
--   mobile
--   frontend
--   backend
+## Milestone 7 — Verification
 
-Profiles suggest tools without forcing installation.
+Goal: standalone, repeatable health checks.
 
-## Planner
+- [ ] `verifier`: fast structural checks (binary on PATH, file
+      exists, token file present)
+- [ ] Deep check mode (on demand): exercise the credential/service
+      for real
+- [ ] Verify output feeds into the same drift surface as scan
+- [ ] Bubble Tea results screen for `verify`
 
-Users interactively accept or reject recommendations and create an
-execution plan.
+## Milestone 8 — Exporters
 
-## Apply
+Goal: reproduce a machine without Setupper installed.
 
-Stages: 1. Install packages 2. Configure tools 3. Authenticate 4. Verify
+- [ ] Shell-script exporter: desired manifest → bootstrap script
+- [ ] Exporter interface generalized enough to add Brewfile /
+      devcontainer.json later
 
-Examples: - gh auth login - aws configure sso / aws sso login - Claude
-Code login/configuration
+## Milestone 9 — Extensions & Language Ecosystems
 
-## Verification
+- [ ] VS Code / Cursor extension scanning (resolve the
+      how-do-we-tell-them-apart open question first)
+- [ ] npm/pnpm/cargo/pipx/uv/go install scanning
+- [ ] Font scanning
+- [ ] Git configuration scanning
 
-Check: - Installed - Configured - Authenticated - Healthy
+## Milestone 10 — Polish & Distribution
 
-## CLI
+- [ ] GitHub Releases build pipeline with checksums
+- [ ] Homebrew tap
+- [ ] End-to-end integration test suite (real `Runner`, gated
+      separately from unit tests)
+- [ ] Documentation pass
 
-``` text
-setupper scan
-setupper inventory
-setupper recommend
-setupper plan
-setupper apply
-setupper verify
-setupper export
-```
+## Deferred / Not in Scope for v1
 
-## Project Structure
+- Linux support (interfaces kept open, no second backend implemented)
+- Unified single-session TUI shell
+- Parallel apply execution
+- Remote/updatable recommendation profiles
+- Full dotfile ownership
+- `/Applications` auto-scanning
+- Open-source licensing decision
 
-``` text
-cmd/setupper
-internal/
-  scanner/
-  inventory/
-  recommender/
-  planner/
-  installer/
-  configurator/
-  verifier/
-  exporter/
-  profiles/
-```
+## Still Unresolved
 
-## Roadmap
-
-### MVP
-
--   Brew scan
--   App scan
--   Manifest
--   Shell exporter
-
-### v0.2
-
--   Recommendation profiles
--   Interactive planner
-
-### v0.3
-
--   Apply engine
--   GitHub/AWS authentication tasks
-
-### v0.4
-
--   VS Code/Cursor extensions
--   Language ecosystems
-
-### v1.0
-
--   Full verification
--   Multi-export support
--   Plugin system
-
-## Long-term Vision
-
-Become a developer environment manager that can discover, improve,
-reproduce, and maintain complete workstations---not just generate setup
-scripts.
+- CLI framework choice (Cobra likely, unconfirmed)
+- Exact shell-exporter output format
+- VS Code vs. Cursor extension disambiguation during scan
