@@ -114,11 +114,11 @@ Goal: reproduce a machine without Setupper installed.
 
 ## Milestone 10 — Polish & Distribution
 
-- [ ] GitHub Releases build pipeline with checksums
+- [x] GitHub Releases build pipeline with checksums
 - [ ] Homebrew tap
-- [ ] End-to-end integration test suite (real `Runner`, gated
+- [x] End-to-end integration test suite (real `Runner`, gated
       separately from unit tests)
-- [ ] Documentation pass
+- [x] Documentation pass
 
 ## Deferred / Not in Scope for v1
 

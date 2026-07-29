@@ -1,0 +1,29 @@
+# Binaries
+/setupper
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries & caches
+*.test
+*.out
+.DS_Store
+
+# Local Setupper directories (if generated in project folder)
+.setupper/
+observed.yaml
+desired.yaml
+plan.yaml
+bootstrap.sh
+
+# Go environment / editor settings
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
