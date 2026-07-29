@@ -77,11 +77,11 @@ Goal: the plan actually does something to the machine.
 
 Goal: auth flows are orchestrated, never stored.
 
-- [ ] `Authenticate` stage: trigger `gh auth login`,
+- [x] `Authenticate` stage: trigger `gh auth login`,
       `aws sso login` / `aws configure sso`, Claude Code login
-- [ ] Manifest records `authenticated: true/false` + account/profile
+- [x] Manifest records `authenticated: true/false` + account/profile
       only — no token/secret persistence
-- [ ] Interface designed to allow a future pluggable secret-backend
+- [x] Interface designed to allow a future pluggable secret-backend
       reference (1Password CLI, Keychain) without implementing one
       yet
 
