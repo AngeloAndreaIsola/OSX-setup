@@ -9,12 +9,12 @@ runnable, not just scaffolding.
 Goal: nothing user-facing yet, but the seams every later milestone
 depends on are in place.
 
-- [ ] `cmd/setupper` skeleton, CLI framework wired up
-- [ ] `internal/runner`: thin `Runner` interface + real subprocess
+- [X] `cmd/setupper` skeleton, CLI framework wired up
+- [X] `internal/runner`: thin `Runner` interface + real subprocess
       implementation (shells out to arbitrary commands)
-- [ ] Fake `Runner` for tests
-- [ ] Manifest types (desired + observed) with `schema_version` field
-- [ ] `~/.setupper/` directory setup (config, cache, logs)
+- [X] Fake `Runner` for tests
+- [X] Manifest types (desired + observed) with `schema_version` field
+- [X] `~/.setupper/` directory setup (config, cache, logs)
 
 ## Milestone 1 — Scan & Inventory (MVP core)
 
