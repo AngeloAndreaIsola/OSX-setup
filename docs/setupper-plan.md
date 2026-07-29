@@ -100,8 +100,8 @@ Goal: standalone, repeatable health checks.
 
 Goal: reproduce a machine without Setupper installed.
 
-- [ ] Shell-script exporter: desired manifest → bootstrap script
-- [ ] Exporter interface generalized enough to add Brewfile /
+- [x] Shell-script exporter: desired manifest → bootstrap script
+- [x] Exporter interface generalized enough to add Brewfile /
       devcontainer.json later
 
 ## Milestone 9 — Extensions & Language Ecosystems
