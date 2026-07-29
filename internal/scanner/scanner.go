@@ -2,6 +2,9 @@ package scanner
 
 import (
 	"context"
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"setupper/internal/manifest"
@@ -22,7 +25,7 @@ func (s *Scanner) Scan(ctx context.Context) (*manifest.ObservedManifest, error) 
 		Resources:     make(map[string]manifest.Resource),
 	}
 
-	// 1. Brew Formulas (skip errors gracefully if not installed)
+	// 1. Brew Formulas
 	_ = s.scanBrewLeaves(ctx, obs)
 
 	// 2. Brew Casks
@@ -30,6 +33,24 @@ func (s *Scanner) Scan(ctx context.Context) (*manifest.ObservedManifest, error) 
 
 	// 3. Mac App Store (mas)
 	_ = s.scanMas(ctx, obs)
+
+	// 4. VS Code & Cursor Extensions
+	_ = s.scanVSCodeExtensions(ctx, obs)
+	_ = s.scanCursorExtensions(ctx, obs)
+
+	// 5. Language package ecosystems
+	_ = s.scanNpmPackages(ctx, obs)
+	_ = s.scanPnpmPackages(ctx, obs)
+	_ = s.scanCargoPackages(ctx, obs)
+	_ = s.scanPipxPackages(ctx, obs)
+	_ = s.scanUvPackages(ctx, obs)
+	_ = s.scanGoPackages(ctx, obs)
+
+	// 6. Fonts
+	_ = s.scanFonts(ctx, obs)
+
+	// 7. Git Configurations
+	_ = s.scanGitConfigs(ctx, obs)
 
 	return obs, nil
 }
@@ -101,6 +122,344 @@ func (s *Scanner) scanMas(ctx context.Context, obs *manifest.ObservedManifest) e
 				Type: "mas",
 				Name: name,
 				Options: map[string]string{"id": id},
+			}
+		}
+	}
+	return nil
+}
+
+func parseExtensionDirName(dirName string) string {
+	idx := strings.LastIndex(dirName, "-")
+	if idx == -1 {
+		return dirName
+	}
+	suffix := dirName[idx+1:]
+	if len(suffix) > 0 && (suffix[0] >= '0' && suffix[0] <= '9') {
+		return dirName[:idx]
+	}
+	return dirName
+}
+
+func (s *Scanner) scanVSCodeExtensions(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "code", "--list-extensions")
+	if err == nil {
+		lines := strings.Split(string(out), "\n")
+		for _, line := range lines {
+			name := strings.TrimSpace(line)
+			if name == "" {
+				continue
+			}
+			key := manifest.FormatKey("vscode-extension", name)
+			obs.Resources[key] = manifest.Resource{
+				Type: "vscode-extension",
+				Name: name,
+			}
+		}
+		return nil
+	}
+
+	// Fallback to directory scraping
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+	dirPath := filepath.Join(homeDir, ".vscode", "extensions")
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		return err
+	}
+	for _, f := range files {
+		if f.IsDir() {
+			name := parseExtensionDirName(f.Name())
+			key := manifest.FormatKey("vscode-extension", name)
+			obs.Resources[key] = manifest.Resource{
+				Type: "vscode-extension",
+				Name: name,
+			}
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanCursorExtensions(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "cursor", "--list-extensions")
+	if err == nil {
+		lines := strings.Split(string(out), "\n")
+		for _, line := range lines {
+			name := strings.TrimSpace(line)
+			if name == "" {
+				continue
+			}
+			key := manifest.FormatKey("cursor-extension", name)
+			obs.Resources[key] = manifest.Resource{
+				Type: "cursor-extension",
+				Name: name,
+			}
+		}
+		return nil
+	}
+
+	// Fallback to directory scraping
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+	dirPath := filepath.Join(homeDir, ".cursor", "extensions")
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		return err
+	}
+	for _, f := range files {
+		if f.IsDir() {
+			name := parseExtensionDirName(f.Name())
+			key := manifest.FormatKey("cursor-extension", name)
+			obs.Resources[key] = manifest.Resource{
+				Type: "cursor-extension",
+				Name: name,
+			}
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanNpmPackages(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "npm", "list", "-g", "--depth=0", "--json")
+	if err != nil {
+		return err
+	}
+
+	var data struct {
+		Dependencies map[string]struct {
+			Version string `json:"version"`
+		} `json:"dependencies"`
+	}
+
+	if err := json.Unmarshal(out, &data); err != nil {
+		return err
+	}
+
+	for pkgName := range data.Dependencies {
+		key := manifest.FormatKey("npm", pkgName)
+		obs.Resources[key] = manifest.Resource{
+			Type: "npm",
+			Name: pkgName,
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanPnpmPackages(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "pnpm", "list", "-g", "--depth=0", "--json")
+	if err != nil {
+		return err
+	}
+
+	var data []struct {
+		Dependencies map[string]struct {
+			Version string `json:"version"`
+		} `json:"dependencies"`
+	}
+
+	if err := json.Unmarshal(out, &data); err != nil {
+		return err
+	}
+
+	for _, item := range data {
+		for pkgName := range item.Dependencies {
+			key := manifest.FormatKey("pnpm", pkgName)
+			obs.Resources[key] = manifest.Resource{
+				Type: "pnpm",
+				Name: pkgName,
+			}
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanCargoPackages(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "cargo", "install", "--list")
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(out), "\n")
+	for _, line := range lines {
+		if line == "" || strings.HasPrefix(line, " ") || strings.HasPrefix(line, "\t") {
+			continue
+		}
+		if strings.Contains(line, " v") && strings.HasSuffix(line, ":") {
+			parts := strings.Fields(line)
+			if len(parts) > 0 {
+				name := parts[0]
+				key := manifest.FormatKey("cargo", name)
+				obs.Resources[key] = manifest.Resource{
+					Type: "cargo",
+					Name: name,
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanPipxPackages(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "pipx", "list", "--json")
+	if err != nil {
+		return err
+	}
+
+	var data struct {
+		Venvs map[string]interface{} `json:"venvs"`
+	}
+
+	if err := json.Unmarshal(out, &data); err != nil {
+		return err
+	}
+
+	for name := range data.Venvs {
+		key := manifest.FormatKey("pipx", name)
+		obs.Resources[key] = manifest.Resource{
+			Type: "pipx",
+			Name: name,
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanUvPackages(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "uv", "tool", "list")
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(out), "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		parts := strings.Fields(line)
+		if len(parts) > 0 {
+			name := parts[0]
+			key := manifest.FormatKey("uv", name)
+			obs.Resources[key] = manifest.Resource{
+				Type: "uv",
+				Name: name,
+			}
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanGoPackages(ctx context.Context, obs *manifest.ObservedManifest) error {
+	// Determine the GOPATH / GOBIN
+	goBinDir := ""
+	outGopath, err := s.runner.Run(ctx, "go", "env", "GOPATH")
+	if err == nil {
+		gopath := strings.TrimSpace(string(outGopath))
+		if gopath != "" {
+			goBinDir = filepath.Join(gopath, "bin")
+		}
+	}
+
+	if goBinDir == "" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return err
+		}
+		goBinDir = filepath.Join(homeDir, "go", "bin")
+	}
+
+	files, err := os.ReadDir(goBinDir)
+	if err != nil {
+		return err
+	}
+
+	for _, f := range files {
+		if f.IsDir() {
+			continue
+		}
+		filePath := filepath.Join(goBinDir, f.Name())
+		// Run go version -m <file> to find import path
+		vOut, vErr := s.runner.Run(ctx, "go", "version", "-m", filePath)
+		if vErr == nil {
+			lines := strings.Split(string(vOut), "\n")
+			for _, line := range lines {
+				line = strings.TrimSpace(line)
+				if strings.HasPrefix(line, "path ") || strings.HasPrefix(line, "path\t") {
+					parts := strings.Fields(line)
+					if len(parts) >= 2 {
+						importPath := parts[1]
+						key := manifest.FormatKey("go", importPath)
+						obs.Resources[key] = manifest.Resource{
+							Type: "go",
+							Name: importPath,
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanFonts(ctx context.Context, obs *manifest.ObservedManifest) error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+
+	fontDirs := []string{
+		filepath.Join(homeDir, "Library", "Fonts"),
+		"/Library/Fonts",
+		"/System/Library/Fonts",
+	}
+
+	for _, dir := range fontDirs {
+		files, err := os.ReadDir(dir)
+		if err != nil {
+			continue
+		}
+		for _, f := range files {
+			if f.IsDir() {
+				continue
+			}
+			ext := strings.ToLower(filepath.Ext(f.Name()))
+			if ext == ".ttf" || ext == ".otf" || ext == ".woff" || ext == ".woff2" {
+				key := manifest.FormatKey("font", f.Name())
+				obs.Resources[key] = manifest.Resource{
+					Type: "font",
+					Name: f.Name(),
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanGitConfigs(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "git", "config", "--list", "--global")
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(out), "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		idx := strings.Index(line, "=")
+		if idx != -1 {
+			key := line[:idx]
+			val := line[idx+1:]
+			rKey := manifest.FormatKey("git-config", key)
+			obs.Resources[rKey] = manifest.Resource{
+				Type: "git-config",
+				Name: key,
+				Options: map[string]string{
+					"value": val,
+				},
 			}
 		}
 	}

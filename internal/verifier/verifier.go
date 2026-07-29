@@ -139,9 +139,29 @@ func (v *Verifier) Verify(ctx context.Context, des *manifest.DesiredManifest, de
 			}
 		}
 
+		if res.Type == "git-config" {
+			obsRes, exists := obs.Resources[key]
+			if exists {
+				desVal := res.Options["value"]
+				obsVal := obsRes.Options["value"]
+				if desVal != obsVal {
+					results = append(results, CheckResult{
+						Resource:   res,
+						Status:     StatusWarning,
+						Message:    fmt.Sprintf("Value mismatch: expected %q, got %q", desVal, obsVal),
+						CheckLevel: level,
+						Key:        key,
+					})
+					continue
+				}
+			}
+		}
+
 		msg := "Installed and healthy"
-		if res.Type == "cask" || res.Type == "mas" {
+		if res.Type == "cask" || res.Type == "mas" || res.Type == "vscode-extension" || res.Type == "cursor-extension" || res.Type == "font" {
 			msg = "Installed"
+		} else if res.Type == "git-config" {
+			msg = "Configured correctly"
 		}
 
 		results = append(results, CheckResult{

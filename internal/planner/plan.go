@@ -63,6 +63,14 @@ func typeOrder(t string) int {
 		return 2
 	case "mas":
 		return 3
+	case "vscode-extension", "cursor-extension":
+		return 4
+	case "npm", "pnpm", "cargo", "pipx", "uv", "go":
+		return 5
+	case "font":
+		return 6
+	case "git-config":
+		return 7
 	default:
 		return 99
 	}

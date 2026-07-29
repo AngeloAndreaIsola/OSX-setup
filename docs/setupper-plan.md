@@ -106,11 +106,11 @@ Goal: reproduce a machine without Setupper installed.
 
 ## Milestone 9 — Extensions & Language Ecosystems
 
-- [ ] VS Code / Cursor extension scanning (resolve the
+- [x] VS Code / Cursor extension scanning (resolve the
       how-do-we-tell-them-apart open question first)
-- [ ] npm/pnpm/cargo/pipx/uv/go install scanning
-- [ ] Font scanning
-- [ ] Git configuration scanning
+- [x] npm/pnpm/cargo/pipx/uv/go install scanning
+- [x] Font scanning
+- [x] Git configuration scanning
 
 ## Milestone 10 — Polish & Distribution
 
