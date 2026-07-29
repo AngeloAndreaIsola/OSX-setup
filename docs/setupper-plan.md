@@ -44,10 +44,10 @@ Goal: the two-manifest model actually works end to end.
 
 Goal: profiles suggest tools based on scan evidence.
 
-- [ ] Embedded YAML profile definitions (`go`, `node`, `python`, ...)
-- [ ] `recommender`: match scan evidence → suggested profiles +
+- [x] Embedded YAML profile definitions (`go`, `node`, `python`, ...)
+- [x] `recommender`: match scan evidence → suggested profiles +
       suggested resources
-- [ ] `setupper recommend` — plain output first (no TUI required yet)
+- [x] `setupper recommend` — plain output first (no TUI required yet)
 
 ## Milestone 4 — Planner TUI
 

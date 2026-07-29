@@ -1,0 +1,49 @@
+profiles:
+  - id: golang
+    name: "Go Developer"
+    description: "Tools for Go development"
+    triggers:
+      - brew:go
+      - brew:golang
+    resources:
+      - type: brew
+        name: golangci-lint
+      - type: brew
+        name: delve
+      - type: cask
+        name: visual-studio-code
+
+  - id: nodejs
+    name: "Node.js Developer"
+    description: "Tools for JavaScript/TypeScript development"
+    triggers:
+      - brew:node
+      - brew:nvm
+      - brew:yarn
+    resources:
+      - type: brew
+        name: nvm
+      - type: brew
+        name: yarn
+      - type: cask
+        name: visual-studio-code
+
+  - id: python
+    name: "Python Developer"
+    description: "Tools for Python development"
+    triggers:
+      - brew:python
+      - brew:python@3.11
+      - brew:python@3.12
+      - brew:pyenv
+      - brew:pipx
+      - brew:poetry
+    resources:
+      - type: brew
+        name: pyenv
+      - type: brew
+        name: pipx
+      - type: brew
+        name: poetry
+      - type: cask
+        name: visual-studio-code
