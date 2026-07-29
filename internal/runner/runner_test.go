@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/angeloandreaisola/OSX-setup/internal/runner"
+	"setupper/internal/runner"
 )
 
 func TestSubprocessRunner(t *testing.T) {

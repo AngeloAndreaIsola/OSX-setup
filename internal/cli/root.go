@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/angeloandreaisola/OSX-setup/internal/paths"
+	"setupper/internal/paths"
 	"github.com/spf13/cobra"
 )
 

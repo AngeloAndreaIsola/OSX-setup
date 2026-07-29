@@ -1,6 +1,6 @@
 package main
 
-import "github.com/angeloandreaisola/OSX-setup/internal/cli"
+import "setupper/internal/cli"
 
 func main() {
 	cli.Execute()

@@ -20,12 +20,12 @@ depends on are in place.
 
 Goal: `setupper scan` produces a real observed manifest for brew.
 
-- [ ] `scanner`: brew formulas + casks via `Runner`
-- [ ] `scanner`: App Store apps via `mas`, if present — skip
+- [X] `scanner`: brew formulas + casks via `Runner`
+- [X] `scanner`: App Store apps via `mas`, if present — skip
       gracefully if absent
-- [ ] Normalized observed manifest output (`type:name` identity keys)
-- [ ] `setupper inventory` — read-only display of observed state
-- [ ] Manually-declared `Application` entries supported in the
+- [X] Normalized observed manifest output (`type:name` identity keys)
+- [X] `setupper inventory` — read-only display of observed state
+- [X] Manually-declared `Application` entries supported in the
       desired manifest schema (no auto-scan)
 
 ## Milestone 2 — Desired Manifest & Diffing
