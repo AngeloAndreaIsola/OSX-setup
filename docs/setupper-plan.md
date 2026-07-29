@@ -65,12 +65,12 @@ Goal: the first real interactive surface.
 
 Goal: the plan actually does something to the machine.
 
-- [ ] `installer`: brew install/upgrade via `Runner`, sequential
-- [ ] Best-effort/continue semantics + `--fail-fast` flag
-- [ ] Per-resource stage scoping (a failed install blocks later
+- [x] `installer`: brew install/upgrade via `Runner`, sequential
+- [x] Best-effort/continue semantics + `--fail-fast` flag
+- [x] Per-resource stage scoping (a failed install blocks later
       stages for that resource only)
-- [ ] Bubble Tea progress screen for `apply`
-- [ ] `configurator`: narrow idempotent shell config blocks (PATH,
+- [x] Bubble Tea progress screen for `apply`
+- [x] `configurator`: narrow idempotent shell config blocks (PATH,
       tool init lines), with dotfile-manager detection/deferral
 
 ## Milestone 6 — Authentication & Secrets
