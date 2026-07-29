@@ -53,13 +53,13 @@ Goal: profiles suggest tools based on scan evidence.
 
 Goal: the first real interactive surface.
 
-- [ ] Bubble Tea checklist screen: accept/reject recommendations and
+- [x] Bubble Tea checklist screen: accept/reject recommendations and
       unmanaged/adoptable resources
-- [ ] `--yes` / non-interactive mode producing the same plan output
-- [ ] `planner`: hardcoded type-level dependency rules
+- [x] `--yes` / non-interactive mode producing the same plan output
+- [x] `planner`: hardcoded type-level dependency rules
       (extension→app, credential→cli-tool) applied when ordering the
       plan
-- [ ] `setupper plan` writes a concrete, ordered execution plan
+- [x] `setupper plan` writes a concrete, ordered execution plan
 
 ## Milestone 5 — Apply Engine
 
