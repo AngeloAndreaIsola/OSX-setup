@@ -40,7 +40,7 @@ var recommendCmd = &cobra.Command{
 			return nil
 		}
 
-		fmt.Println("--- Recommendations ---\n")
+		fmt.Printf("--- Recommendations ---\n\n")
 		for _, rec := range recommendations {
 			fmt.Printf("📦 Profile: %s (%s)\n", rec.Profile.Name, rec.Profile.ID)
 			fmt.Printf("   Description: %s\n", rec.Profile.Description)

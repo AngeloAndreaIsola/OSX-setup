@@ -89,12 +89,12 @@ Goal: auth flows are orchestrated, never stored.
 
 Goal: standalone, repeatable health checks.
 
-- [ ] `verifier`: fast structural checks (binary on PATH, file
+- [x] `verifier`: fast structural checks (binary on PATH, file
       exists, token file present)
-- [ ] Deep check mode (on demand): exercise the credential/service
+- [x] Deep check mode (on demand): exercise the credential/service
       for real
-- [ ] Verify output feeds into the same drift surface as scan
-- [ ] Bubble Tea results screen for `verify`
+- [x] Verify output feeds into the same drift surface as scan
+- [x] Bubble Tea results screen for `verify`
 
 ## Milestone 8 — Exporters
 
