@@ -2,14 +2,12 @@ package cli
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"sort"
 
 	"setupper/internal/manifest"
 	"setupper/internal/paths"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 var inventoryCmd = &cobra.Command{
@@ -22,18 +20,11 @@ var inventoryCmd = &cobra.Command{
 		}
 
 		obsPath := filepath.Join(baseDir, "cache", "observed.yaml")
-		data, err := os.ReadFile(obsPath)
+		obsPtr, err := manifest.LoadObserved(obsPath)
 		if err != nil {
-			if os.IsNotExist(err) {
-				return fmt.Errorf("no inventory found, please run 'setupper scan' first")
-			}
-			return fmt.Errorf("failed to read observed manifest: %w", err)
+			return fmt.Errorf("failed to load observed manifest (run 'setupper scan' first): %w", err)
 		}
-
-		var obs manifest.ObservedManifest
-		if err := yaml.Unmarshal(data, &obs); err != nil {
-			return fmt.Errorf("failed to parse observed manifest: %w", err)
-		}
+		obs := *obsPtr
 
 		grouped := make(map[string][]manifest.Resource)
 		for _, res := range obs.Resources {

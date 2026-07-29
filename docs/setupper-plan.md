@@ -9,35 +9,35 @@ runnable, not just scaffolding.
 Goal: nothing user-facing yet, but the seams every later milestone
 depends on are in place.
 
-- [X] `cmd/setupper` skeleton, CLI framework wired up
-- [X] `internal/runner`: thin `Runner` interface + real subprocess
+- [x] `cmd/setupper` skeleton, CLI framework wired up
+- [x] `internal/runner`: thin `Runner` interface + real subprocess
       implementation (shells out to arbitrary commands)
-- [X] Fake `Runner` for tests
-- [X] Manifest types (desired + observed) with `schema_version` field
-- [X] `~/.setupper/` directory setup (config, cache, logs)
+- [x] Fake `Runner` for tests
+- [x] Manifest types (desired + observed) with `schema_version` field
+- [x] `~/.setupper/` directory setup (config, cache, logs)
 
 ## Milestone 1 — Scan & Inventory (MVP core)
 
 Goal: `setupper scan` produces a real observed manifest for brew.
 
-- [X] `scanner`: brew formulas + casks via `Runner`
-- [X] `scanner`: App Store apps via `mas`, if present — skip
+- [x] `scanner`: brew formulas + casks via `Runner`
+- [x] `scanner`: App Store apps via `mas`, if present — skip
       gracefully if absent
-- [X] Normalized observed manifest output (`type:name` identity keys)
-- [X] `setupper inventory` — read-only display of observed state
-- [X] Manually-declared `Application` entries supported in the
+- [x] Normalized observed manifest output (`type:name` identity keys)
+- [x] `setupper inventory` — read-only display of observed state
+- [x] Manually-declared `Application` entries supported in the
       desired manifest schema (no auto-scan)
 
 ## Milestone 2 — Desired Manifest & Diffing
 
 Goal: the two-manifest model actually works end to end.
 
-- [ ] Desired manifest schema + YAML (de)serialization
-- [ ] Diff engine: observed vs. desired → unmanaged / missing /
+- [x] Desired manifest schema + YAML (de)serialization
+- [x] Diff engine: observed vs. desired → unmanaged / missing /
       matching
-- [ ] `setupper init`: scan + profile auto-suggestion (stub profiles
+- [x] `setupper init`: scan + profile auto-suggestion (stub profiles
       OK for now) → starter desired manifest, reviewed before write
-- [ ] `setupper migrate`: explicit schema-version upgrade command
+- [x] `setupper migrate`: explicit schema-version upgrade command
       (fail loudly on mismatch elsewhere)
 
 ## Milestone 3 — Recommendation Profiles

@@ -2,14 +2,13 @@ package cli
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
+	"setupper/internal/manifest"
 	"setupper/internal/paths"
 	"setupper/internal/runner"
 	"setupper/internal/scanner"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 var scanCmd = &cobra.Command{
@@ -25,19 +24,14 @@ var scanCmd = &cobra.Command{
 			return fmt.Errorf("failed to scan: %w", err)
 		}
 
-		data, err := yaml.Marshal(obs)
-		if err != nil {
-			return fmt.Errorf("failed to marshal manifest: %w", err)
-		}
-
 		baseDir, err := paths.GetBaseDir()
 		if err != nil {
 			return err
 		}
 
 		obsPath := filepath.Join(baseDir, "cache", "observed.yaml")
-		if err := os.WriteFile(obsPath, data, 0644); err != nil {
-			return fmt.Errorf("failed to write observed manifest: %w", err)
+		if err := manifest.SaveObserved(obsPath, obs); err != nil {
+			return fmt.Errorf("failed to save observed manifest: %w", err)
 		}
 
 		fmt.Printf("Scan complete! Found %d resources.\n", len(obs.Resources))
