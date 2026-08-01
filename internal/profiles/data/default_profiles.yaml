@@ -47,3 +47,164 @@ profiles:
         name: poetry
       - type: cask
         name: visual-studio-code
+
+  - id: general
+    name: "General Developer"
+    description: "Common utilities every developer benefits from"
+    triggers:
+      - brew:git
+      - brew:curl
+      - brew:wget
+    resources:
+      - type: brew
+        name: jq
+      - type: brew
+        name: tree
+      - type: brew
+        name: htop
+      - type: brew
+        name: ripgrep
+      - type: brew
+        name: fd
+      - type: brew
+        name: bat
+      - type: brew
+        name: coreutils
+      - type: brew
+        name: wget
+
+  - id: devops
+    name: "DevOps Engineer"
+    description: "Infrastructure-as-code and CI/CD tooling"
+    triggers:
+      - brew:terraform
+      - brew:ansible
+      - brew:packer
+      - cask:docker
+      - brew:vagrant
+    resources:
+      - type: brew
+        name: terraform
+      - type: brew
+        name: ansible
+      - type: brew
+        name: packer
+      - type: cask
+        name: docker
+      - type: brew
+        name: shellcheck
+
+  - id: kubernetes
+    name: "Kubernetes Developer"
+    description: "Kubernetes cluster management and development tools"
+    triggers:
+      - brew:kubectl
+      - brew:kubernetes-cli
+      - brew:helm
+      - brew:minikube
+    resources:
+      - type: brew
+        name: kubectl
+      - type: brew
+        name: helm
+      - type: brew
+        name: k9s
+      - type: brew
+        name: kubectx
+      - type: brew
+        name: stern
+      - type: brew
+        name: kustomize
+
+  - id: aws
+    name: "AWS Developer"
+    description: "AWS CLI tools and helpers"
+    triggers:
+      - brew:awscli
+      - brew:aws-vault
+      - brew:aws-sam-cli
+    resources:
+      - type: brew
+        name: awscli
+      - type: brew
+        name: aws-vault
+      - type: cask
+        name: session-manager-plugin
+
+  - id: security
+    name: "Security & Cryptography"
+    description: "Encryption, signing, and secrets management tools"
+    triggers:
+      - brew:gnupg
+      - brew:age
+      - brew:sops
+      - cask:1password
+    resources:
+      - type: brew
+        name: gnupg
+      - type: brew
+        name: age
+      - type: brew
+        name: sops
+      - type: cask
+        name: 1password-cli
+
+  - id: mobile
+    name: "Mobile Developer"
+    description: "iOS and Android development tools"
+    triggers:
+      - brew:cocoapods
+      - cask:flutter
+      - cask:android-studio
+      - brew:fastlane
+    resources:
+      - type: cask
+        name: flutter
+      - type: brew
+        name: cocoapods
+      - type: brew
+        name: fastlane
+      - type: cask
+        name: android-studio
+
+  - id: frontend
+    name: "Frontend Developer"
+    description: "Frontend build tools, linters, and frameworks"
+    triggers:
+      - brew:node
+      - npm:vite
+      - npm:prettier
+      - npm:eslint
+      - npm:sass
+    resources:
+      - type: npm
+        name: prettier
+      - type: npm
+        name: eslint
+      - type: brew
+        name: vite
+      - type: cask
+        name: figma
+      - type: cask
+        name: visual-studio-code
+
+  - id: backend
+    name: "Backend Developer"
+    description: "Backend services, databases, and API tools"
+    triggers:
+      - brew:postgresql
+      - brew:redis
+      - brew:nginx
+      - brew:protobuf
+      - brew:grpcurl
+    resources:
+      - type: brew
+        name: postgresql
+      - type: brew
+        name: redis
+      - type: brew
+        name: protobuf
+      - type: brew
+        name: grpcurl
+      - type: cask
+        name: postman
