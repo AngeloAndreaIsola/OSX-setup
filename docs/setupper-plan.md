@@ -48,6 +48,22 @@ Goal: profiles suggest tools based on scan evidence.
 - [x] `recommender`: match scan evidence → suggested profiles +
       suggested resources
 - [x] `setupper recommend` — plain output first (no TUI required yet)
+- [ ] `general` profile (wget, htop, tree, jq, curl, coreutils,
+      ripgrep, fd, bat — common developer utilities)
+- [ ] `devops` profile (docker, terraform, ansible, packer,
+      vagrant triggers/resources)
+- [ ] `kubernetes` profile (kubectl, helm, k9s, kubectx, stern,
+      kustomize triggers/resources)
+- [ ] `aws` profile (awscli, aws-vault, session-manager-plugin
+      triggers/resources)
+- [ ] `security` profile (gnupg, age, sops, 1password-cli
+      triggers/resources)
+- [ ] `mobile` profile (flutter, cocoapods, fastlane,
+      android-studio, xcode-select triggers/resources)
+- [ ] `frontend` profile (prettier, eslint, vite, sass,
+      tailwindcss triggers/resources)
+- [ ] `backend` profile (protobuf, grpcurl, redis, nginx,
+      postgresql triggers/resources)
 
 ## Milestone 4 — Planner TUI
 
@@ -120,6 +136,86 @@ Goal: reproduce a machine without Setupper installed.
       separately from unit tests)
 - [x] Documentation pass
 
+## Milestone 11 - Application Scanner
+
+Goal: be able to also scann the application folder
+
+- [ ] `scanner`: `/Applications` directory auto-scan — enumerate
+      `.app` bundles and register them as `application` resources
+- [ ] `/Applications` scan: extract bundle identifier and version
+      from `Info.plist` (`CFBundleIdentifier`, `CFBundleShortVersionString`)
+- [ ] `/Applications` scan: deduplicate against already-discovered
+      `cask` and `mas` resources (skip apps that are already tracked
+      by brew or the App Store)
+- [ ] `/Applications` scan: skip system/Apple-provided apps
+      (e.g. Safari, Xcode command-line tools stubs) via a
+      configurable exclusion list
+- [ ] Tests for `/Applications` scanner using the fake `Runner`
+      and a temporary directory tree
+- [ ] `scanner`: `brew tap` to list active taps — register each
+      as a `brew-tap` resource
+- [ ] `installer`: `brew tap <name>` for install,
+      `brew untap <name>` for remove
+- [ ] Brew-tap dependency inference: during scan, cross-reference
+      each cask/formula against `brew info --json=v2` to record
+      which tap it originates from; during plan, automatically
+      order `brew-tap` resources before any formula/cask that
+      depends on them
+
+## Milestone 12 — macOS System Preferences
+
+Goal: scan, apply, and verify macOS system-level settings so a
+fresh machine feels identical to the old one.
+
+### macOS Defaults
+
+- [ ] New resource type `macos-default` with fields: `domain`,
+      `key`, `value`, `value_type` (bool / int / float / string)
+- [ ] `scanner`: read a curated set of known-useful defaults
+      categories — Finder, Dock, NSGlobalDomain, screencapture,
+      Mail, keyboard, trackpad
+- [ ] `installer`: `defaults write <domain> <key> -<type> <val>`
+      for apply; `defaults delete <domain> <key>` for remove;
+      `killall` the affected process when needed (Finder, Dock,
+      SystemUIServer)
+- [ ] `verifier`: `defaults read <domain> <key>` and compare
+      against desired value
+- [ ] Curated default set seeded from `osx_setup.sh`:
+      AppleShowAllExtensions, Dock autohide + timing, Finder
+      status/path bar, screenshot location/format, save-to-disk
+      default, keyboard full-access mode, show-recents in Dock
+
+### Dock Layout
+
+- [ ] New resource type `dock-item` with fields: `name`,
+      `action` (add / remove), `position` (optional index)
+- [ ] `scanner`: read current Dock contents via
+      `dockutil --list` (skip gracefully if absent)
+- [ ] `installer`: `dockutil --add` / `dockutil --remove` +
+      `killall Dock`
+- [ ] Dependency: `dock-item` resources depend on `brew:dockutil`
+
+### Default Applications
+
+- [ ] New resource type `default-app` with fields:
+      `scheme` (http / mailto / public.html / etc.),
+      `handler` (bundle ID, e.g. `com.google.Chrome`)
+- [ ] `scanner`: read current handler for common schemes via
+      Launch Services or `duti`
+- [ ] `installer`: set handler via `duti` or
+      `open -a <app> --args --make-default-browser` for http/https
+
+### Keyboard, Language & Input
+
+- [ ] `macos-default` entries for keyboard settings:
+      KeyRepeat, InitialKeyRepeat,
+      ApplePressAndHoldEnabled
+- [ ] `macos-default` entries for locale/language:
+      AppleLanguages, AppleLocale, AppleMeasurementUnits
+- [ ] `macos-default` entries for trackpad:
+      Clicking (tap to click), TrackpadThreeFingerDrag,
+      com.apple.trackpad.scaling
+
 ## Deferred / Not in Scope for v1
 
 - Linux support (interfaces kept open, no second backend implemented)
@@ -127,11 +223,8 @@ Goal: reproduce a machine without Setupper installed.
 - Parallel apply execution
 - Remote/updatable recommendation profiles
 - Full dotfile ownership
-- `/Applications` auto-scanning
 - Open-source licensing decision
 
 ## Still Unresolved
 
-- CLI framework choice (Cobra likely, unconfirmed)
 - Exact shell-exporter output format
-- VS Code vs. Cursor extension disambiguation during scan
