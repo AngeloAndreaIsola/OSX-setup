@@ -180,10 +180,11 @@ fresh machine feels identical to the old one.
    SystemUIServer)
 - [x] `verifier`: `defaults read <domain> <key>` and compare
    against desired value
-- [ ] Curated default set seeded from `osx_setup.sh`:
-      AppleShowAllExtensions, Dock autohide + timing, Finder
-      status/path bar, screenshot location/format, save-to-disk
-      default, keyboard full-access mode, show-recents in Dock
+
+- [x] Curated default set seeded from `osx_setup.sh`:
+       AppleShowAllExtensions, Dock autohide + timing, Finder
+       status/path bar, screenshot location/format, save-to-disk
+       default, keyboard full-access mode, show-recents in Dock
 
 ### Dock Layout
 
@@ -197,22 +198,22 @@ fresh machine feels identical to the old one.
 
 ### Default Applications
 
-- [ ] New resource type `default-app` with fields:
+- [x] New resource type `default-app` with fields:
       `scheme` (http / mailto / public.html / etc.),
       `handler` (bundle ID, e.g. `com.google.Chrome`)
-- [ ] `scanner`: read current handler for common schemes via
+- [x] `scanner`: read current handler for common schemes via
       Launch Services or `duti`
-- [ ] `installer`: set handler via `duti` or
+- [x] `installer`: set handler via `duti` or
       `open -a <app> --args --make-default-browser` for http/https
 
 ### Keyboard, Language & Input
 
-- [ ] `macos-default` entries for keyboard settings:
+- [x] `macos-default` entries for keyboard settings:
       KeyRepeat, InitialKeyRepeat,
       ApplePressAndHoldEnabled
-- [ ] `macos-default` entries for locale/language:
+- [x] `macos-default` entries for locale/language:
       AppleLanguages, AppleLocale, AppleMeasurementUnits
-- [ ] `macos-default` entries for trackpad:
+- [x] `macos-default` entries for trackpad:
       Clicking (tap to click), TrackpadThreeFingerDrag,
       com.apple.trackpad.scaling
 

@@ -540,16 +540,28 @@ func (s *Scanner) scanGitConfigs(ctx context.Context, obs *manifest.ObservedMani
 }
 
 func (s *Scanner) scanMacOSDefaults(ctx context.Context, obs *manifest.ObservedManifest) error {
-    // Define a curated list of defaults to scan
+    // Define a curated list of defaults to scan, including keyboard, language and trackpad settings
     defaults := []struct {
         domain string
         key    string
+        vtype  string // value_type for installer: "string", "int", "bool", "float"
     }{
-        {"NSGlobalDomain", "AppleShowAllExtensions"},
-        {"NSGlobalDomain", "ApplePressAndHoldEnabled"},
-        {"com.apple.dock", "autohide"},
-        {"com.apple.finder", "ShowPathbar"},
-        {"com.apple.screencapture", "type"},
+        {"NSGlobalDomain", "AppleShowAllExtensions", "bool"},
+        {"NSGlobalDomain", "ApplePressAndHoldEnabled", "bool"},
+        {"com.apple.dock", "autohide", "bool"},
+        {"com.apple.finder", "ShowPathbar", "bool"},
+        {"com.apple.screencapture", "type", "string"},
+        // Keyboard settings
+        {"NSGlobalDomain", "KeyRepeat", "int"},
+        {"NSGlobalDomain", "InitialKeyRepeat", "int"},
+        // Locale / language settings
+        {"NSGlobalDomain", "AppleLanguages", "string"},
+        {"NSGlobalDomain", "AppleLocale", "string"},
+        {"NSGlobalDomain", "AppleMeasurementUnits", "string"},
+        // Trackpad settings
+        {"NSGlobalDomain", "Clicking", "bool"},
+        {"NSGlobalDomain", "TrackpadThreeFingerDrag", "bool"},
+        {"NSGlobalDomain", "com.apple.trackpad.scaling", "float"},
     }
     for _, d := range defaults {
         out, err := s.runner.Run(ctx, "defaults", "read", d.domain, d.key)
@@ -566,7 +578,7 @@ func (s *Scanner) scanMacOSDefaults(ctx context.Context, obs *manifest.ObservedM
                 "domain": d.domain,
                 "key": d.key,
                 "value": val,
-                "value_type": "string",
+                "value_type": d.vtype,
             },
         }
     }
