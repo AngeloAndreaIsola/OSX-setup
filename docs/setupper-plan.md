@@ -138,25 +138,25 @@ Goal: reproduce a machine without Setupper installed.
 
 ## Milestone 11 - Application Scanner
 
-Goal: be able to also scann the application folder
+Goal: be able to also scan the application folder
 
-- [ ] `scanner`: `/Applications` directory auto-scan — enumerate
+- [x] `scanner`: `/Applications` directory auto-scan — enumerate
       `.app` bundles and register them as `application` resources
-- [ ] `/Applications` scan: extract bundle identifier and version
+- [x] `/Applications` scan: extract bundle identifier and version
       from `Info.plist` (`CFBundleIdentifier`, `CFBundleShortVersionString`)
-- [ ] `/Applications` scan: deduplicate against already-discovered
+- [x] `/Applications` scan: deduplicate against already-discovered
       `cask` and `mas` resources (skip apps that are already tracked
       by brew or the App Store)
-- [ ] `/Applications` scan: skip system/Apple-provided apps
+- [x] `/Applications` scan: skip system/Apple-provided apps
       (e.g. Safari, Xcode command-line tools stubs) via a
       configurable exclusion list
-- [ ] Tests for `/Applications` scanner using the fake `Runner`
+- [x] Tests for `/Applications` scanner using the fake `Runner`
       and a temporary directory tree
-- [ ] `scanner`: `brew tap` to list active taps — register each
+- [x] `scanner`: `brew tap` to list active taps — register each
       as a `brew-tap` resource
-- [ ] `installer`: `brew tap <name>` for install,
+- [x] `installer`: `brew tap <name>` for install,
       `brew untap <name>` for remove
-- [ ] Brew-tap dependency inference: during scan, cross-reference
+- [x] Brew-tap dependency inference: during scan, cross-reference
       each cask/formula against `brew info --json=v2` to record
       which tap it originates from; during plan, automatically
       order `brew-tap` resources before any formula/cask that

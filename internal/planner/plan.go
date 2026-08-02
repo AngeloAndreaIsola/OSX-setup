@@ -57,20 +57,22 @@ func GeneratePlan(installs []manifest.Resource, removes []manifest.Resource) *Ex
 
 func typeOrder(t string) int {
 	switch t {
-	case "brew":
+	case "brew-tap":
 		return 1
-	case "cask":
+	case "brew":
 		return 2
-	case "mas":
+	case "cask":
 		return 3
-	case "vscode-extension", "cursor-extension":
+	case "mas":
 		return 4
-	case "npm", "pnpm", "cargo", "pipx", "uv", "go":
+	case "vscode-extension", "cursor-extension":
 		return 5
-	case "font":
+	case "npm", "pnpm", "cargo", "pipx", "uv", "go":
 		return 6
-	case "git-config":
+	case "font":
 		return 7
+	case "git-config":
+		return 8
 	default:
 		return 99
 	}

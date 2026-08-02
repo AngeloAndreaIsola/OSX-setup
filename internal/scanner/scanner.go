@@ -19,6 +19,52 @@ func New(r runner.Runner) *Scanner {
 	return &Scanner{runner: r}
 }
 
+func (s *Scanner) scanApplications(ctx context.Context, obs *manifest.ObservedManifest) error {
+	appsDir := "/Applications"
+	entries, err := os.ReadDir(appsDir)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
+		if entry.IsDir() && strings.HasSuffix(entry.Name(), ".app") {
+			name := entry.Name()
+			// Check dedup against cask and mas resources
+			if _, exists := obs.Resources[manifest.FormatKey("cask", name)]; exists {
+				continue
+			}
+			// Read bundle identifier and version
+			bundleID := ""
+			version := ""
+			// Use defaults read to get CFBundleIdentifier
+			outID, errID := s.runner.Run(ctx, "defaults", "read", filepath.Join(appsDir, name, "Contents", "Info"), "CFBundleIdentifier")
+			if errID == nil {
+				bundleID = strings.TrimSpace(string(outID))
+			}
+			outVer, errVer := s.runner.Run(ctx, "defaults", "read", filepath.Join(appsDir, name, "Contents", "Info"), "CFBundleShortVersionString")
+			if errVer == nil {
+				version = strings.TrimSpace(string(outVer))
+			}
+			key := manifest.FormatKey("application", name)
+			// If bundleID matches existing mas or cask, skip
+			if bundleID != "" {
+				if _, exists := obs.Resources[manifest.FormatKey("mas", bundleID)]; exists {
+					continue
+				}
+				// Also check cask by bundleID if needed (not implemented)
+			}
+			opts := map[string]string{}
+			if bundleID != "" {
+				opts["bundle_id"] = bundleID
+			}
+			if version != "" {
+				opts["version"] = version
+			}
+			obs.Resources[key] = manifest.Resource{Type: "application", Name: name, Options: opts}
+		}
+	}
+	return nil
+}
+
 func (s *Scanner) Scan(ctx context.Context) (*manifest.ObservedManifest, error) {
 	obs := &manifest.ObservedManifest{
 		SchemaVersion: "1.0",
@@ -27,6 +73,7 @@ func (s *Scanner) Scan(ctx context.Context) (*manifest.ObservedManifest, error) 
 
 	// 1. Brew Formulas
 	_ = s.scanBrewLeaves(ctx, obs)
+	_ = s.scanBrewTaps(ctx, obs)
 
 	// 2. Brew Casks
 	_ = s.scanBrewCasks(ctx, obs)
@@ -52,6 +99,9 @@ func (s *Scanner) Scan(ctx context.Context) (*manifest.ObservedManifest, error) 
 	// 7. Git Configurations
 	_ = s.scanGitConfigs(ctx, obs)
 
+	// 8. Applications
+	_ = s.scanApplications(ctx, obs)
+
 	return obs, nil
 }
 
@@ -73,6 +123,23 @@ func (s *Scanner) scanBrewLeaves(ctx context.Context, obs *manifest.ObservedMani
 			Type: "brew",
 			Name: name,
 		}
+	}
+	return nil
+}
+
+func (s *Scanner) scanBrewTaps(ctx context.Context, obs *manifest.ObservedManifest) error {
+	out, err := s.runner.Run(ctx, "brew", "tap")
+	if err != nil {
+		return err
+	}
+	lines := strings.Split(string(out), "\n")
+	for _, line := range lines {
+		name := strings.TrimSpace(line)
+		if name == "" {
+			continue
+		}
+		key := manifest.FormatKey("brew-tap", name)
+		obs.Resources[key] = manifest.Resource{Type: "brew-tap", Name: name}
 	}
 	return nil
 }

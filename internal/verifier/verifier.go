@@ -158,7 +158,7 @@ func (v *Verifier) Verify(ctx context.Context, des *manifest.DesiredManifest, de
 		}
 
 		msg := "Installed and healthy"
-		if res.Type == "cask" || res.Type == "mas" || res.Type == "vscode-extension" || res.Type == "cursor-extension" || res.Type == "font" {
+		if res.Type == "cask" || res.Type == "mas" || res.Type == "vscode-extension" || res.Type == "cursor-extension" || res.Type == "font" || res.Type == "application" || res.Type == "brew-tap" {
 			msg = "Installed"
 		} else if res.Type == "git-config" {
 			msg = "Configured correctly"
