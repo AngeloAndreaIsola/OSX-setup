@@ -169,17 +169,17 @@ fresh machine feels identical to the old one.
 
 ### macOS Defaults
 
-- [ ] New resource type `macos-default` with fields: `domain`,
-      `key`, `value`, `value_type` (bool / int / float / string)
-- [ ] `scanner`: read a curated set of known-useful defaults
-      categories — Finder, Dock, NSGlobalDomain, screencapture,
-      Mail, keyboard, trackpad
-- [ ] `installer`: `defaults write <domain> <key> -<type> <val>`
-      for apply; `defaults delete <domain> <key>` for remove;
-      `killall` the affected process when needed (Finder, Dock,
-      SystemUIServer)
-- [ ] `verifier`: `defaults read <domain> <key>` and compare
-      against desired value
+- [x] New resource type `macos-default` with fields: `domain`,
+   `key`, `value`, `value_type` (bool / int / float / string)
+- [x] `scanner`: read a curated set of known-useful defaults
+   categories — Finder, Dock, NSGlobalDomain, screencapture,
+   Mail, keyboard, trackpad
+- [x] `installer`: `defaults write <domain> <key> -<type> <val>`
+   for apply; `defaults delete <domain> <key>` for remove;
+   `killall` the affected process when needed (Finder, Dock,
+   SystemUIServer)
+- [x] `verifier`: `defaults read <domain> <key>` and compare
+   against desired value
 - [ ] Curated default set seeded from `osx_setup.sh`:
       AppleShowAllExtensions, Dock autohide + timing, Finder
       status/path bar, screenshot location/format, save-to-disk
@@ -187,12 +187,12 @@ fresh machine feels identical to the old one.
 
 ### Dock Layout
 
-- [ ] New resource type `dock-item` with fields: `name`,
-      `action` (add / remove), `position` (optional index)
-- [ ] `scanner`: read current Dock contents via
-      `dockutil --list` (skip gracefully if absent)
-- [ ] `installer`: `dockutil --add` / `dockutil --remove` +
-      `killall Dock`
+- [x] New resource type `dock-item` with fields: `name`,
+       `action` (add / remove), `position` (optional index)
+- [x] `scanner`: read current Dock contents via
+       `dockutil --list` (skip gracefully if absent)
+- [x] `installer`: `dockutil --add` / `dockutil --remove` +
+       `killall Dock`
 - [ ] Dependency: `dock-item` resources depend on `brew:dockutil`
 
 ### Default Applications

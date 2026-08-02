@@ -87,6 +87,61 @@ func runInstall(ctx context.Context, r runner.Runner, res manifest.Resource) err
 		val := res.Options["value"]
 		_, err := r.Run(ctx, "git", "config", "--global", res.Name, val)
 		return err
+	case "macos-default":
+		domain := res.Options["domain"]
+		key := res.Options["key"]
+		val := res.Options["value"]
+		vtype := res.Options["value_type"]
+		if domain == "" || key == "" || val == "" || vtype == "" {
+			return fmt.Errorf("missing options for macos-default %s", res.Name)
+		}
+		// Build defaults write command
+		// e.g., defaults write <domain> <key> -<type> <value>
+		_, err := r.Run(ctx, "defaults", "write", domain, key, "-"+vtype, val)
+		if err != nil {
+			return err
+		}
+		// Restart affected process if needed
+		if domain == "NSGlobalDomain" || strings.HasPrefix(domain, "com.apple.") {
+			// Simplified: kill Finder, Dock, SystemUIServer
+			proc := ""
+			if strings.Contains(domain, "finder") {
+				proc = "Finder"
+			} else if strings.Contains(domain, "dock") {
+				proc = "Dock"
+			} else {
+				proc = "SystemUIServer"
+			}
+			if proc != "" {
+				_, _ = r.Run(ctx, "killall", proc)
+			}
+		}
+		return nil
+	case "dock-item":
+		name := res.Name
+		action := res.Options["action"]
+		if action == "add" {
+			_, err := r.Run(ctx, "dockutil", "--add", name)
+			if err != nil {
+				return err
+			}
+		} else if action == "remove" {
+			_, err := r.Run(ctx, "dockutil", "--remove", name)
+			if err != nil {
+				return err
+			}
+		}
+		// Restart Dock
+		_, _ = r.Run(ctx, "killall", "Dock")
+		return nil
+	case "default-app":
+		scheme := res.Name
+		handler := res.Options["handler"]
+		if scheme == "" || handler == "" {
+			return fmt.Errorf("missing options for default-app %s", scheme)
+		}
+		_, err := r.Run(ctx, "duti", "-s", handler, scheme, "all")
+		return err
 	default:
 		return fmt.Errorf("unsupported resource type: %s", res.Type)
 	}

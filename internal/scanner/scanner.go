@@ -75,8 +75,14 @@ func (s *Scanner) Scan(ctx context.Context) (*manifest.ObservedManifest, error) 
 	_ = s.scanBrewLeaves(ctx, obs)
 	_ = s.scanBrewTaps(ctx, obs)
 
+	// New scanning methods for macOS defaults, Dock items, and default apps
+	_ = s.scanMacOSDefaults(ctx, obs)
+	_ = s.scanDockItems(ctx, obs)
+	_ = s.scanDefaultApps(ctx, obs)
+
 	// 2. Brew Casks
 	_ = s.scanBrewCasks(ctx, obs)
+
 
 	// 3. Mac App Store (mas)
 	_ = s.scanMas(ctx, obs)
@@ -531,4 +537,90 @@ func (s *Scanner) scanGitConfigs(ctx context.Context, obs *manifest.ObservedMani
 		}
 	}
 	return nil
+}
+
+func (s *Scanner) scanMacOSDefaults(ctx context.Context, obs *manifest.ObservedManifest) error {
+    // Define a curated list of defaults to scan
+    defaults := []struct {
+        domain string
+        key    string
+    }{
+        {"NSGlobalDomain", "AppleShowAllExtensions"},
+        {"NSGlobalDomain", "ApplePressAndHoldEnabled"},
+        {"com.apple.dock", "autohide"},
+        {"com.apple.finder", "ShowPathbar"},
+        {"com.apple.screencapture", "type"},
+    }
+    for _, d := range defaults {
+        out, err := s.runner.Run(ctx, "defaults", "read", d.domain, d.key)
+        if err != nil {
+            // If the key does not exist, skip it
+            continue
+        }
+        val := strings.TrimSpace(string(out))
+        key := manifest.FormatKey("macos-default", d.domain+":"+d.key)
+        obs.Resources[key] = manifest.Resource{
+            Type: "macos-default",
+            Name: d.key,
+            Options: map[string]string{
+                "domain": d.domain,
+                "key": d.key,
+                "value": val,
+                "value_type": "string",
+            },
+        }
+    }
+    return nil
+}
+
+func (s *Scanner) scanDockItems(ctx context.Context, obs *manifest.ObservedManifest) error {
+    out, err := s.runner.Run(ctx, "dockutil", "--list")
+    if err != nil {
+        // dockutil may not be installed; skip scanning dock items
+        return nil
+    }
+    lines := strings.Split(string(out), "\n")
+    for _, line := range lines {
+        name := strings.TrimSpace(line)
+        if name == "" {
+            continue
+        }
+        key := manifest.FormatKey("dock-item", name)
+        obs.Resources[key] = manifest.Resource{
+            Type: "dock-item",
+            Name: name,
+            Options: map[string]string{
+                "action": "present",
+            },
+        }
+    }
+    return nil
+}
+
+func (s *Scanner) scanDefaultApps(ctx context.Context, obs *manifest.ObservedManifest) error {
+    // Scan a set of common URL schemes for their default handlers
+    schemes := []string{"http", "https", "mailto", "ftp"}
+    for _, scheme := range schemes {
+        out, err := s.runner.Run(ctx, "duti", "-x", scheme)
+        if err != nil {
+            continue
+        }
+        lines := strings.Split(string(out), "\n")
+        if len(lines) == 0 {
+            continue
+        }
+        handler := strings.TrimSpace(lines[0])
+        if handler == "" {
+            continue
+        }
+        key := manifest.FormatKey("default-app", scheme)
+        obs.Resources[key] = manifest.Resource{
+            Type: "default-app",
+            Name: scheme,
+            Options: map[string]string{
+                "handler": handler,
+            },
+        }
+    }
+    return nil
 }

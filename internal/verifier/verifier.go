@@ -156,6 +156,44 @@ func (v *Verifier) Verify(ctx context.Context, des *manifest.DesiredManifest, de
 				}
 			}
 		}
+		// Additional verification for macOS defaults, dock items, default apps
+		if res.Type == "macos-default" {
+			obsRes, exists := obs.Resources[key]
+			if exists {
+				desVal := res.Options["value"]
+				obsVal := obsRes.Options["value"]
+				if desVal != "" && desVal != obsVal {
+					results = append(results, CheckResult{
+						Resource:   res,
+						Status:     StatusWarning,
+						Message:    fmt.Sprintf("Value mismatch: expected %q, got %q", desVal, obsVal),
+						CheckLevel: level,
+						Key:        key,
+					})
+					continue
+				}
+			}
+		}
+		if res.Type == "dock-item" {
+			// Presence already verified by existence check earlier; no deep check needed
+		}
+		if res.Type == "default-app" {
+			obsRes, exists := obs.Resources[key]
+			if exists {
+				desHandler := res.Options["handler"]
+				obsHandler := obsRes.Options["handler"]
+				if desHandler != "" && desHandler != obsHandler {
+					results = append(results, CheckResult{
+						Resource:   res,
+						Status:     StatusWarning,
+						Message:    fmt.Sprintf("Handler mismatch: expected %q, got %q", desHandler, obsHandler),
+						CheckLevel: level,
+						Key:        key,
+					})
+					continue
+				}
+			}
+		}
 
 		msg := "Installed and healthy"
 		if res.Type == "cask" || res.Type == "mas" || res.Type == "vscode-extension" || res.Type == "cursor-extension" || res.Type == "font" || res.Type == "application" || res.Type == "brew-tap" {
